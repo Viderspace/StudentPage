@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 function App() {
   const [messages, setMessages] = useState([]);
+  const [systemPrompt, setSystemPrompt] = useState(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [voices, setVoices] = useState([]);
@@ -19,8 +20,23 @@ function App() {
         const data = await res.json();
 
         if (data.prompt) {
-          setMessages([{ role: 'system', content: data.prompt }]);
-          console.log("Prompt loaded successfully:", data.prompt);
+          const systemMsg = { role: 'system', content: data.prompt };
+          setSystemPrompt(systemMsg);
+          setMessages([]); // Reset to blank while we fetch the first reply
+
+          // 👇 Initial assistant reply based on prompt
+          const replyRes = await fetch('https://studentbackend-production.up.railway.app/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: [systemMsg, { role: 'user', content: 'Introduce the topic to the student and explain how you can help.' }] })
+          });
+
+          const replyData = await replyRes.json();
+          const assistantReply = replyData.reply || "שלום! אני כאן לעזור לך ללמוד.";
+
+          setMessages([
+            { role: 'assistant', content: assistantReply }
+          ]);
         } else {
           setMessages([{ role: 'system', content: '❌ Prompt not found for this session.' }]);
         }
@@ -28,21 +44,19 @@ function App() {
         console.error(err);
         setMessages([{ role: 'system', content: '❌ Failed to load the session prompt.' }]);
       }
-      // init prompt
-      const res1 = await fetch('https://teacher-backend-production.up.railway.app/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data })
-      });
     };
 
     fetchPrompt();
   }, []);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
+    if (!input.trim() || !systemPrompt) return;
+
+    const userMessage = { role: 'user', content: input };
+    const currentMessages = [...messages, userMessage];
+    const fullMessages = [systemPrompt, ...currentMessages];
+
+    setMessages(currentMessages);
     setInput('');
     setLoading(true);
 
@@ -50,15 +64,15 @@ function App() {
       const res = await fetch('https://studentbackend-production.up.railway.app/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages })
+        body: JSON.stringify({ messages: fullMessages })
       });
 
       const data = await res.json();
       const reply = data.reply || "סליחה, חלה שגיאה";
-      setMessages([...newMessages, { role: 'assistant', content: reply }]);
+      setMessages([...currentMessages, { role: 'assistant', content: reply }]);
     } catch (err) {
       console.error("Fetch error:", err);
-      setMessages([...newMessages, { role: 'assistant', content: "❌ שגיאה במציאת מורה מלווה" }]);
+      setMessages([...currentMessages, { role: 'assistant', content: "❌ שגיאה במציאת מורה מלווה" }]);
     }
 
     setLoading(false);
