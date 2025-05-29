@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+// import { useSearchParams } from 'react-router-dom';
 
 
 function App() {
@@ -38,19 +38,21 @@ function App() {
   // }, []);
 
   useEffect(() => {
-  const fetchPrompt = async () => {
-    const res = await fetch(`https://teacher-backend-production.up.railway.app/get-tutor-prompt?session=${sessionId}`);
-    const data = await res.json();
+    const queryParams = new URLSearchParams(window.location.search);
+    const sessionId = queryParams.get('session') || 'latest';
+    const fetchPrompt = async () => {
+      const res = await fetch(`https://teacher-backend-production.up.railway.app/get-tutor-prompt?session=${sessionId}`);
+      const data = await res.json();
 
-    if (data.prompt) {
-      setMessages([{ role: 'system', content: data.prompt }]);
-    } else {
-      setMessages([{ role: 'system', content: '❌ Prompt not found for this session.' }]);
-    }
-  };
+      if (data.prompt) {
+        setMessages([{ role: 'system', content: data.prompt }]);
+      } else {
+        setMessages([{ role: 'system', content: '❌ Prompt not found for this session.' }]);
+      }
+    };
 
-  fetchPrompt();
-}, []);
+    fetchPrompt();
+  }, []);
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
