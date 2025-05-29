@@ -1,41 +1,58 @@
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [messages, setMessages] = useState([
-    {
-      role: "system",
-      content: `You are a helpful, efficient, and concise AI tutor in pythagorean theorem. Your sole goal is to help the student 
-      understand and learn the material provided by the teacher. You should adapt your teaching style to 
-      fit the student's specific needs and preferences, which will be included in the context.
-      
-      Follow this flow:
-      1. Understand the provided material (lesson plan, grade level, needs).
-      2. Begin an interactive conversation with the student.
-      3. Adapt teaching style (audio, written, short videos, etc.) based on student needs.
-      4. Continue until key topics are understood. And the user answers 5 questions correctly about the topic
+  // const [messages, setMessages] = useState([
+  //   {
+  //     role: "system",
+  //     content: `You are a helpful, efficient, and concise AI tutor in pythagorean theorem. Your sole goal is to help the student 
+  //     understand and learn the material provided by the teacher. You should adapt your teaching style to 
+  //     fit the student's specific needs and preferences, which will be included in the context.
 
-      Be short, practical, and encouraging.`
-    }
-  ]);
+  //     Follow this flow:
+  //     1. Understand the provided material (lesson plan, grade level, needs).
+  //     2. Begin an interactive conversation with the student.
+  //     3. Adapt teaching style (audio, written, short videos, etc.) based on student needs.
+  //     4. Continue until key topics are understood. And the user answers 5 questions correctly about the topic
+
+  //     Be short, practical, and encouraging.`
+  //   }
+  // ]);
+
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const fetchPrompt = async () => {
+      const res = await fetch('https://teacher-backend-production.up.railway.app/get-tutor-prompt');
+      const data = await res.json();
+      setMessages([
+        {
+          role: "system",
+          content: data.prompt || "You are a helpful tutor. Let's begin."
+        }
+      ]);
+    };
+
+    fetchPrompt();
+  }, []);
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  //   const startChat = async () => {
-  //     const res = await fetch('https://studentbackend-production.up.railway.app/ask', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ messages })
-  //     });
-  //     const data = await res.json();
-  //     setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
-  //   };
+    //   const startChat = async () => {
+    //     const res = await fetch('https://studentbackend-production.up.railway.app/ask', {
+    //       method: 'POST',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify({ messages })
+    //     });
+    //     const data = await res.json();
+    //     setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+    //   };
 
-  //   if (messages.length === 1) {
-  //     startChat();
-  //   }
-  // }, []);
+    //   if (messages.length === 1) {
+    //     startChat();
+    //   }
+    // }, []);
     const fetchLesson = async () => {
       // const res = await fetch('https://teacher-backend-production.up.railway.app/lesson');
       const data = await res.json();
@@ -105,19 +122,19 @@ function App() {
   // 🔊 Use browser TTS
   const readAloud = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
-  
+
     // Example: Choose a more natural voice
     const preferredVoice = voices.find(
       v => v.name.includes("Apple") // v.lang.startsWith('he')
     );
-  
+
     if (preferredVoice) {
       utterance.voice = preferredVoice;
     }
-  
+
     speechSynthesis.speak(utterance);
   };
-  
+
 
   // 🎥 Extract YouTube Video ID
   const extractYouTubeId = (text) => {
@@ -129,7 +146,7 @@ function App() {
   return (
     <div>
       <h1>מורה</h1>
-  
+
       <div style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>
         {messages
           .filter(msg => msg.role === 'user' || msg.role === 'assistant')
@@ -160,7 +177,7 @@ function App() {
           ))}
       </div>
 
-  
+
       <input
         value={input}
         onChange={e => setInput(e.target.value)}
