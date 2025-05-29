@@ -89,11 +89,35 @@ function App() {
     setLoading(false);
   };
 
+  const [voices, setVoices] = useState([]);
+
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const availableVoices = speechSynthesis.getVoices();
+      setVoices(availableVoices);
+    };
+
+    // Some browsers require this event
+    window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+    handleVoicesChanged(); // Call it once in case voices are already loaded
+  }, []);
+
   // 🔊 Use browser TTS
   const readAloud = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
+  
+    // Example: Choose a more natural voice
+    const preferredVoice = voices.find(
+      v => v.name.includes("Google") || v.name.includes("Apple") || v.lang === "en-US"
+    );
+  
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+  
     speechSynthesis.speak(utterance);
   };
+  
 
   // 🎥 Extract YouTube Video ID
   const extractYouTubeId = (text) => {
