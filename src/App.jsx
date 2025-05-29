@@ -4,17 +4,17 @@ function App() {
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `
-      You are a helpful, efficient, and concise assistant for a teacher. Your sole goal is to gather lesson material for upcoming classes so you can later help students learn it more effectively.
+      content: `You are a helpful, efficient, and concise AI tutor. Your sole goal is to help the student 
+      understand and learn the material provided by the teacher. You should adapt your teaching style to 
+      fit the student's specific needs and preferences, which will be included in the context.
+      
+      Follow this flow:
+      1. Understand the provided material (lesson plan, grade level, needs).
+      2. Begin an interactive conversation with the student.
+      3. Adapt teaching style (audio, written, short videos, etc.) based on student needs.
+      4. Continue until key topics are understood.
 
-      Your interaction should follow this flow:
-
-      1. Ask the teacher to upload a document or describe upcoming class topics.
-      2. Acknowledge the subject and ask teaching-related follow-up questions.
-      3. After gathering info, confirm readiness to assist students.
-
-      Keep responses short, practical, and easy to scan.
-      `
+      Be short, practical, and encouraging.`
     }
   ]);
 
@@ -22,19 +22,45 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const startChat = async () => {
-      const res = await fetch('https://studentbackend-production.up.railway.app/ask', {
+  //   const startChat = async () => {
+  //     const res = await fetch('https://studentbackend-production.up.railway.app/ask', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ messages })
+  //     });
+  //     const data = await res.json();
+  //     setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+  //   };
+
+  //   if (messages.length === 1) {
+  //     startChat();
+  //   }
+  // }, []);
+    const fetchLesson = async () => {
+      const res = await fetch('https://teacher-backend-production.up.railway.app/lesson');
+      const data = await res.json();
+      const lessonContext = {
+        role: 'system',
+        content: `The following lesson plan has been provided by the teacher:\n\n${data.lesson}`
+      };
+      const starter = {
+        role: 'user',
+        content: `Hello, I'm ready to learn!`
+      };
+
+      setMessages((prev) => [...prev, lessonContext, starter]);
+
+      const replyRes = await fetch('https://studentbackend-production.up.railway.app/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
+        body: JSON.stringify({ messages: [...messages, lessonContext, starter] })
       });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      const replyData = await replyRes.json();
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: replyData.reply }]);
     };
 
-    if (messages.length === 1) {
-      startChat();
-    }
+    fetchLesson();
   }, []);
 
   const handleSend = async () => {
@@ -65,7 +91,7 @@ function App() {
 
   return (
     <div>
-      <h1>Teacher Assistant</h1>
+      <h1>Tutor</h1>
       <div>
         {messages.map((msg, i) => (
           <p key={i}><strong>{msg.role}:</strong> {msg.content}</p>
