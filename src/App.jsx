@@ -108,7 +108,7 @@ function App() {
   
     // Example: Choose a more natural voice
     const preferredVoice = voices.find(
-      v => v.name.includes("Google")
+      v => v.lang.startsWith('he')
     );
   
     if (preferredVoice) {
@@ -128,7 +128,7 @@ function App() {
 
   return (
     <div>
-      <h1>Tutor</h1>
+      <h1>מורה</h1>
   
       <div style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>
         {messages
@@ -139,7 +139,7 @@ function App() {
 
               {/* 🔊 Read Aloud Button (Only for assistant messages) */}
               {msg.role === 'assistant' && (
-                <button onClick={() => readAloud(msg.content)}>🔊 Read Aloud</button>
+                <button onClick={() => readAloud(msg.content)}>🔊 הקראה</button>
               )}
 
               {/* 📺 Show YouTube Video if any link exists */}
