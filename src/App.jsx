@@ -108,7 +108,7 @@ function App() {
   
     // Example: Choose a more natural voice
     const preferredVoice = voices.find(
-      v => v.lang.startsWith('he')
+      v => v.name.includes("Apple") // v.lang.startsWith('he')
     );
   
     if (preferredVoice) {
