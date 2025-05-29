@@ -93,9 +93,13 @@ function App() {
     <div>
       <h1>Tutor</h1>
       <div>
-        {messages.map((msg, i) => (
-          <p key={i}><strong>{msg.role}:</strong> {msg.content}</p>
-        ))}
+        <div>
+          {messages
+            .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+            .map((msg, i) => (
+              <p key={i}>{msg.content}</p>
+            ))}
+        </div>
       </div>
       <input
         value={input}
