@@ -4,7 +4,7 @@ function App() {
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `You are a helpful, efficient, and concise AI tutor. Your sole goal is to help the student 
+      content: `You are a helpful, efficient, and concise AI tutor in pythagorean theorem. Your sole goal is to help the student 
       understand and learn the material provided by the teacher. You should adapt your teaching style to 
       fit the student's specific needs and preferences, which will be included in the context.
       
@@ -37,7 +37,7 @@ function App() {
   //   }
   // }, []);
     const fetchLesson = async () => {
-      const res = await fetch('https://teacher-backend-production.up.railway.app/lesson');
+      // const res = await fetch('https://teacher-backend-production.up.railway.app/lesson');
       const data = await res.json();
       const lessonContext = {
         role: 'system',
