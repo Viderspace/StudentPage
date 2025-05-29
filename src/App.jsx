@@ -103,7 +103,7 @@ function App() {
 
   return (
     <div>
-      <h1>מורה</h1>
+      <h1>מורה מלווה לסטודנט</h1>
       <div style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>
         {messages
           .filter(msg => msg.role === 'user' || msg.role === 'assistant')
@@ -135,9 +135,9 @@ function App() {
         onKeyDown={e => e.key === 'Enter' && handleSend()}
         placeholder="נא להקליד הודעה..."
       />
-      <button onClick={handleSend} disabled={loading}>
+      {/* <button onClick={handleSend} disabled={loading}>
         {loading ? "שליחה..." : "Send"}
-      </button>
+      </button> */}
     </div>
   );
 }
