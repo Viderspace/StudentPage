@@ -78,12 +78,12 @@ function App() {
       });
 
       const data = await res.json();
-      const reply = data.reply || "Sorry, something went wrong.";
+      const reply = data.reply || "סליחה, חלה שגיאה";
 
       setMessages([...newMessages, { role: 'assistant', content: reply }]);
     } catch (err) {
       console.error("Fetch error:", err);
-      setMessages([...newMessages, { role: 'assistant', content: "❌ Error contacting assistant." }]);
+      setMessages([...newMessages, { role: 'assistant', content: "❌ שגיאה במציאת מורה מלווה" }]);
     }
 
     setLoading(false);
@@ -152,7 +152,7 @@ function App() {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    title="YouTube Video"
+                    title="וידאו"
                   ></iframe>
                 </div>
               )}
@@ -165,10 +165,10 @@ function App() {
         value={input}
         onChange={e => setInput(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && handleSend()}
-        placeholder="Type your message..."
+        placeholder="נא להקליד הודעה..."
       />
       <button onClick={handleSend} disabled={loading}>
-        {loading ? "Sending..." : "Send"}
+        {loading ? "שליחה..." : "Send"}
       </button>
     </div>
   );
