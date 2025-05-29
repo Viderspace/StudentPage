@@ -12,7 +12,7 @@ function App() {
       1. Understand the provided material (lesson plan, grade level, needs).
       2. Begin an interactive conversation with the student.
       3. Adapt teaching style (audio, written, short videos, etc.) based on student needs.
-      4. Continue until key topics are understood.
+      4. Continue until key topics are understood. And the user answers 5 questions correctly about the topic
 
       Be short, practical, and encouraging.`
     }
@@ -92,15 +92,14 @@ function App() {
   return (
     <div>
       <h1>Tutor</h1>
-      <div>
-        <div>
-          {messages
-            .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-            .map((msg, i) => (
-              <p key={i}>{msg.content}</p>
-            ))}
-        </div>
+  
+      <div style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>
+        {messages
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map((msg, i) => msg.content)
+          .join('\n\n')}
       </div>
+  
       <input
         value={input}
         onChange={e => setInput(e.target.value)}
