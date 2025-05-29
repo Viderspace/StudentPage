@@ -89,6 +89,19 @@ function App() {
     setLoading(false);
   };
 
+  // 🔊 Use browser TTS
+  const readAloud = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+  };
+
+  // 🎥 Extract YouTube Video ID
+  const extractYouTubeId = (text) => {
+    const match = text.match(/(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be\.com\/watch\?v=)([\w-]{11})/);
+    return match ? match[1] : null;
+  };
+
+
   return (
     <div>
       <h1>Tutor</h1>
@@ -96,9 +109,33 @@ function App() {
       <div style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>
         {messages
           .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-          .map((msg, i) => msg.content)
-          .join('\n\n')}
+          .map((msg, i) => (
+            <div key={i} style={{ marginBottom: '1rem' }}>
+              <p>{msg.content}</p>
+
+              {/* 🔊 Read Aloud Button (Only for assistant messages) */}
+              {msg.role === 'assistant' && (
+                <button onClick={() => readAloud(msg.content)}>🔊 Read Aloud</button>
+              )}
+
+              {/* 📺 Show YouTube Video if any link exists */}
+              {msg.role === 'assistant' && extractYouTubeId(msg.content) && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <iframe
+                    width="320"
+                    height="180"
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(msg.content)}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="YouTube Video"
+                  ></iframe>
+                </div>
+              )}
+            </div>
+          ))}
       </div>
+
   
       <input
         value={input}
