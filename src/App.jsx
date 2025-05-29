@@ -1,4 +1,4 @@
-
+// studentbackend-production.up.railway.app
 
 import { useState } from 'react';
 
@@ -14,7 +14,7 @@ function App() {
     }
     setLoading(true);
     try {
-      const response = await fetch('https://your-backend.com/set-material', {
+      const response = await fetch('studentbackend-production.up.railway.app/set-material', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
