@@ -235,6 +235,7 @@ function App() {
 
         if (data.prompt) {
           setMessages([{ role: 'system', content: data.prompt }]);
+          console.log("Prompt loaded successfully:", data.prompt);
         } else {
           setMessages([{ role: 'system', content: '❌ Prompt not found for this session.' }]);
         }
